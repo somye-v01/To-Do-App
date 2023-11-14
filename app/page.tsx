@@ -1,48 +1,40 @@
 'use client';
 import React, { useState } from 'react';
+import TodoItem from './_component/TodoItem';
+export interface Todo {
+	title: string;
+	desc: string;
+}
 
 const page = () => {
 	const [title, setTitle] = useState('');
 	const [desc, setDesc] = useState('');
-	const [taskList, setTaskList] = useState([]);
+	const [taskList, setTaskList] = useState<Todo[]>([]);
 
-	const buttonhandle = (e) => {
+	const buttonhandle = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setTaskList([...taskList, { title, desc }]);
 		setDesc('');
 		setTitle('');
 	};
 
-	const deleteTask = (i) => {
+	const deleteTask = (i: number) => {
 		let copyTask = [...taskList];
 		copyTask.splice(i, 1);
 		setTaskList(copyTask);
 	};
 
-	let renderTask = <h2> No Task available </h2>;
-	if (taskList.length > 0) {
-		renderTask = taskList.map((t, i) => {
-			return (
-				<div
-					key={i}
-					className="flex items-center justify-between px-5 font-light mb-5 text-lg"
-				>
-					<div className="flex justify-between w-2/3">
-						<h5>{t.title}</h5>
-						<h5>{t.desc}</h5>
-					</div>
-					<button
-						className=" bg-red-400 text-white px-4 py-2 rounded font-bold"
-						onClick={() => {
-							deleteTask(i);
-						}}
-					>
-						Delete
-					</button>
-				</div>
-			);
-		});
-	}
+	const UpdateTitle = (i: number, NewTitle: string) => {
+		const TodoList = [...taskList];
+		TodoList[i].title = NewTitle;
+		setTaskList(TodoList);
+	};
+
+	const UpdateDescription = (i: number, NewDescription: string) => {
+		const TodoList = [...taskList];
+		TodoList[i].desc = NewDescription;
+		setTaskList(TodoList);
+	};
 
 	return (
 		<div>
@@ -74,7 +66,23 @@ const page = () => {
 			</form>
 			<hr />
 			<div className="p-8 bg-slate-200">
-				<ul>{renderTask}</ul>
+				<ul>
+					{taskList.length <= 0 ? (
+						<h2> No Task available </h2>
+					) : (
+						taskList.map((t, i) => (
+							<TodoItem
+								key={i}
+								index={i}
+								title={t.title}
+								desc={t.desc}
+								DeleteFunction={deleteTask}
+								UpdateTitleFunction={UpdateTitle}
+								UpdateDescriptionFunction={UpdateDescription}
+							/>
+						))
+					)}
+				</ul>
 			</div>
 		</div>
 	);
